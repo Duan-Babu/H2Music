@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>氢音乐-主页</title>
+    <meta name="referrer" content="no-referrer" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="keywords" content="氢音乐,音乐播放器" />
+    <meta name="description" content="氢音乐,一个支持第三方登录的纯粹的播放网站" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4466345895756968" crossorigin="anonymous"></script>
+    <script type="module" crossorigin src="https://cdn.w3cbus.com/mdui/2/assets/index-57285f39.js"></script>
+    <link rel="modulepreload" crossorigin href="https://cdn.w3cbus.com/mdui/2/assets/mdui-c4ea44a4.js">
+    <link rel="stylesheet" href="https://cdn.w3cbus.com/mdui/2/assets/mdui-67e1dd1d.css">
+    <link rel="stylesheet" href="https://cdn.w3cbus.com/mdui/2/assets/index-2963d242.css">
+    <link rel="stylesheet" href="https://cdn.w3cbus.com/mdui/2/assets/fonts-dca0575d.css">
+    <link rel="icon" href="https://cdnjson.com/images/2023/11/03/QQ.png" />
+</head>
+<body class="mdui-theme-auto">
+        <mdui-navigation-rail contained="true" placement="left" alignment="center">
+          <mdui-button-icon icon="menu" slot="top" name="" value="" type="button" variant="standard"></mdui-button-icon>
+          <mdui-fab lowered="" icon="music_note--outlined" slot="top" name="" value="" type="button" variant="primary" size="normal" style="transition-property: box-shadow, width, bottom, transform;"></mdui-fab>
+          <mdui-button-icon icon="settings" slot="bottom" name="" value="" type="button" variant="standard"></mdui-button-icon>
+      
+          <mdui-navigation-rail-item onclick="gotoHomePage()" icon="home--outlined" active-icon="home--filled" tabindex="0" placement="left" active="">主页</mdui-navigation-rail-item>
+          <mdui-navigation-rail-item onclick="gotoSearchPage()" icon="search" tabindex="0" placement="left">搜索</mdui-navigation-rail-item>
+          <mdui-navigation-rail-item icon="watch_later--outlined" active-icon="watch_later--filled" tabindex="0" placement="left">最近</mdui-navigation-rail-item>
+        </mdui-navigation-rail>
+    <div id="Pages" style="height: 100vh;overflow: auto">
+        <div id="HomePage">
+            
+            <h1>主页</h1>
+            
+            <mdui-snackbar closeable class="example-closeable">💭正在搜索，请稍候。</mdui-snackbar>
+        </div>
+
+        <div id="SearchPage" style="display: none;">
+            
+            <h1>搜索</h1>
+            <mdui-card style="width: 98%; height: auto" >
+                <mdui-text-field id="SearchBox" style="width: 100%;" label="在这里输入你要搜索的歌曲/歌手/歌词/专辑，支持模糊搜索">
+                <mdui-button-icon slot="icon" icon="search" onclick="getListInformation()"></mdui-button-icon>
+              </mdui-text-field>
+              <mdui-linear-progress id="Loading" style="display:none"></mdui-linear-progress>
+              
+            </mdui-card><br>
+            <div id="SearchResult" >
+            </div>
+        </div>
+    </div>
+    <mdui-snackbar closeable class="example-closeable">正在搜索，请稍后。</mdui-snackbar>
+      <mdui-dialog class="notice-action">
+        <span slot="headline">网站公告</span>
+        <span slot="description">本站仅供技术学习交流之用，版权归原网站所有</span>
+        <mdui-button slot="action" variant="text">取消</mdui-button>
+        <mdui-button slot="action" variant="tonal" class="ReadButton">已读</mdui-button>
+        </mdui-dialog>
+
+        <mdui-dialog  close-on-esc close-on-overlay-click class="song-action">
+            <span slot="headline">歌曲详情</span>
+            <img id="封面" src="https://www.kugou.com/yy/static/images/play/default.jpg" height="300px" width="300px" style="border-radius:20px">
+            <h1 id='歌曲'></h1>
+            <span id='歌手' style="font-size: large;"></span><br>
+            <span id='专辑' style="font-size: large;"></span><br>
+            <audio id="音乐" controls>
+                <source src="" type="audio/flac">
+                你的浏览器不支持此文件格式。
+              </audio>
+            </mdui-dialog>
+<script>
+    const dialog = document.querySelector(".notice-action");
+    dialog.open = true;
+    const closeButton = document.querySelector(".ReadButton");
+    closeButton.addEventListener("click", () => dialog.open = false);
+</script>
+</body>
+<script>
+    const snackbar = document.querySelector(".example-closeable");
+    // 构建请求头
+    const headersHome = new Headers();
+    headersHome.append('Referer', 'https://api.vkeys.cn');
+
+    // 构建请求配置
+    const requestConfig = {
+    method: 'GET',
+    headers: headersHome
+    };
+    
+    function gotoHomePage() {
+        document.getElementById("HomePage").style="display:";
+        document.getElementById("SearchPage").style="display:none";
+    }
+
+    function gotoSearchPage() {
+        document.getElementById("HomePage").style="display:none";
+        document.getElementById("SearchPage").style="display:";
+    }
+    
+    function gotoRecentPage() {
+
+    }
+
+    function getListInformation() {
+    document.getElementById('SearchResult').innerHTML='';
+    const url= 'https://api.vkeys.cn/API/QQ_Music?word=' + document.getElementById('SearchBox').value ;
+    document.getElementById("Loading").style="display:";
+    snackbar.open = true;
+    fetch(url,requestConfig)
+      .then(response => response.json())
+      .then(data => { 
+        document.getElementById("Loading").style="display:none"
+            for (let i = 0; i < data.data.length; i++) {  
+                var div_child='<mdui-list onclick="getSongInformation('+(i+1)+')"><mdui-list-item headline="'+data.data[i].song+'" description="'+data.data[i].singer+' '+data.data[i].album+'"><mdui-avatar slot="icon"><mdui-icon name="music_note"></mdui-icon></mdui-avatar></mdui-list-item></mdui-list>';
+                var c=document.getElementById('SearchResult');
+                c.innerHTML+=div_child;
+            }
+        }
+      )
+      .catch(error => {
+        document.getElementById("Loading").style="display:none";
+      });
+    }
+
+    function getSongInformation(num) {
+    document.querySelector(".song-action").open = true;
+    const url= 'https://api.vkeys.cn/API/QQ_Music?word=' + document.getElementById('SearchBox').value + '&n='+ num  ;
+    fetch(url,requestConfig)
+      .then(response => response.json())
+      .then(data => { 
+        document.getElementById('歌曲').textContent=data.data.song;   
+        document.getElementById('歌手').textContent=data.data.singer;   
+        document.getElementById('专辑').textContent=data.data.album;     
+        document.getElementById('封面').src=data.data.cover;   
+        document.getElementById('音乐').src=data.data.url;   
+        }
+      )
+      .catch(error => {
+
+      });
+    }
+    </script>
+    
+<script type="text/javascript">
+    var OriginTitile = document.title,titleTime;
+    document.addEventListener("visibilitychange",
+    function() {
+        if (document.hidden) {
+            
+            document.title = "(っ °Д °;)っ客官别走嘛~";
+            clearTimeout(titleTime)
+        } else {
+            
+            document.title = "(✿◕‿◕✿) 欢迎客官再次光临！" + OriginTitile;
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile
+            },
+            2000)
+        }
+    });
+    </script>
+</body>
+</html>
