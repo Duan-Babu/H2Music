@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>氢音乐-主页</title>
+    <title>氢音乐</title>
     <meta name="referrer" content="no-referrer" />
     <meta name="viewport" content="width=device-width" />
     <meta name="keywords" content="氢音乐,音乐播放器" />
@@ -13,6 +13,12 @@
     <link rel="stylesheet" href="https://cdn.w3cbus.com/mdui/2/assets/index-2963d242.css">
     <link rel="stylesheet" href="https://cdn.w3cbus.com/mdui/2/assets/fonts-dca0575d.css">
     <link rel="icon" href="https://cdnjson.com/images/2023/11/03/QQ.png" />
+    <style>
+    .MainPage{
+      height:calc(100vh - 100px);
+      overflow: auto
+    }
+    </style>
 </head>
 <body class="mdui-theme-auto">
         <mdui-navigation-rail contained="true" placement="left" alignment="center">
@@ -24,12 +30,11 @@
           <mdui-navigation-rail-item onclick="gotoSearchPage()" icon="search" tabindex="0" placement="left">搜索</mdui-navigation-rail-item>
           <mdui-navigation-rail-item icon="watch_later--outlined" active-icon="watch_later--filled" tabindex="0" placement="left">最近</mdui-navigation-rail-item>
         </mdui-navigation-rail>
-    <div id="Pages" style="height: 100vh;overflow: auto">
+    <div id="Pages" class="MainPage">
         <div id="HomePage">
             
             <h1>主页</h1>
             
-            <mdui-snackbar closeable class="example-closeable">💭正在搜索，请稍候。</mdui-snackbar>
         </div>
 
         <div id="SearchPage" style="display: none;">
@@ -46,7 +51,18 @@
             </div>
         </div>
     </div>
-    <mdui-snackbar closeable class="example-closeable">正在搜索，请稍后。</mdui-snackbar>
+    <div id="PlayerBar" style="height: 100px;overflow: auto;display: flex;align-items: center">
+      <img id="MB_封面" src="https://www.kugou.com/yy/static/images/play/default.jpg" height="80%" width="" style="border-radius:10px;display: flex;justify-content: center;align-items: center;">
+      <div style="width: 10px;"></div>
+      <div style="display: flex;flex-direction: column; width: auto;">
+        <div id="MB_歌曲" style="font-size: large;font-weight: bold;">当前没有正在播放的歌曲</div>
+        <div style="height: 5px;"></div>
+        <div id="MB_歌手">歌手</div>
+        <div style="height: 5px;"></div>
+        <div id="MB_专辑" style="color: dimgrey;">专辑</div>
+      </div>
+        <mdui-button-icon style="text-align: right;display: flex;justify-content: flex-end;" id="MB_播放按钮" selectable icon="play_arrow" selected-icon="pause"></mdui-button-icon></div>
+    <mdui-snackbar closeable class="example-closeable">💭正在加载，请稍候。</mdui-snackbar>
       <mdui-dialog class="notice-action">
         <span slot="headline">网站公告</span>
         <span slot="description">本站仅供技术学习交流之用，版权归原网站所有</span>
@@ -121,6 +137,7 @@
 
     function getSongInformation(num) {
     document.querySelector(".song-action").open = true;
+    document.getElementById("Loading").style="display:";
     const url= 'https://api.vkeys.cn/API/QQ_Music?word=' + document.getElementById('SearchBox').value + '&n='+ num  ;
     fetch(url,requestConfig)
       .then(response => response.json())
@@ -130,6 +147,10 @@
         document.getElementById('专辑').textContent=data.data.album;     
         document.getElementById('封面').src=data.data.cover;   
         document.getElementById('音乐').src=data.data.url;   
+        document.getElementById('MB_歌曲').textContent=data.data.song;   
+        document.getElementById('MB_歌手').textContent=data.data.singer;   
+        document.getElementById('MB_专辑').textContent=data.data.album;     
+        document.getElementById('MB_封面').src=data.data.cover; 
         }
       )
       .catch(error => {
@@ -137,18 +158,25 @@
       });
     }
     </script>
-    
+   
+    <script>
+      var audio = document.getElementById('音乐');
+      if (audio.paused=false){
+        document.getElementById('MB_播放按钮').icon="pause";
+      }
+
+    </script>
 <script type="text/javascript">
     var OriginTitile = document.title,titleTime;
     document.addEventListener("visibilitychange",
     function() {
         if (document.hidden) {
             
-            document.title = "(っ °Д °;)っ客官别走嘛~";
+            document.title = "(っ °Д °;)っ客官别走嘛~-氢音乐";
             clearTimeout(titleTime)
         } else {
             
-            document.title = "(✿◕‿◕✿) 欢迎客官再次光临！" + OriginTitile;
+            document.title = "(✿◕‿◕✿) 欢迎客官再次光临！-氢音乐" + OriginTitile;
             titleTime = setTimeout(function() {
                 document.title = OriginTitile
             },
